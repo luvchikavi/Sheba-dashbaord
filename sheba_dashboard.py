@@ -55,7 +55,7 @@ if page == "Landing Page":
 
     # Add the diagram image
     st.subheader("Data Processing Flow Diagram")
-    st.image("data_processing_diagram1.svg", use_column_width=True)
+    st.image("data_processing_diagram1.svg", use_container_width=True)
 
     if st.button("Start Using Dashboard"):
         st.session_state.start = True
@@ -262,53 +262,6 @@ elif page == "Compliance Tracker":
         })
         st.table(tasks)
 
-# Recommendations Tab
-elif page == "Recommendations":
-    st.image("sheba_logo.png", width=200)  # Sheba Logo on top of the page
-    st.title("General Overview and Recommendations")
-    st.markdown(
-        """
-        Based on the collected data and analyses, here are the top recommendations prioritized by importance and time sensitivity.
-        Additionally, set your internal goals and explore offset and inset processes to achieve net-zero emissions.
-        """
-    )
-
-    # Goal Setting
-    st.subheader("Set Internal Goals")
-    goals = pd.DataFrame({
-        "Goal": ["Net-zero emissions by 2030", "Offset 30% emissions by 2025", "Implement inset projects by 2026"],
-        "Status": ["In Progress", "Not Started", "In Progress"],
-        "Priority": ["High", "Medium", "High"]
-    })
-    st.table(goals)
-
-        # Recommendations
-    st.subheader("Top Recommendations")
-    recommendations = pd.DataFrame({
-        "Recommendation": [
-            "Increase renewable energy usage",
-            "Implement advanced waste management systems",
-            "Optimize transportation routes",
-            "Conduct staff training on sustainability"
-        ],
-        "Priority": ["High", "Medium", "High", "Low"],
-        "Timeframe": ["1 year", "2 years", "6 months", "1 year"]
-    })
-    st.table(recommendations)
-
-    # Visualizations
-    st.subheader("Progress Towards Goals")
-    progress_data = pd.DataFrame({
-        "Category": ["Renewable Energy", "Waste Management", "Transportation Optimization"],
-        "Progress (%)": [60, 40, 50]
-    })
-    progress_chart = px.bar(
-        progress_data, x="Category", y="Progress (%)", title="Goal Progress",
-        labels={"Progress (%)": "Completion Percentage"},
-        color="Category", color_discrete_sequence=px.colors.sequential.Viridis
-    )
-    st.plotly_chart(progress_chart)
-    # Recommendations Tab
 elif page == "Recommendations":
     st.image("sheba_logo.png", width=200)  # Sheba Logo on top of the page
     st.title("General Overview and Recommendations")
@@ -341,6 +294,19 @@ elif page == "Recommendations":
         "Timeframe": ["1 year", "2 years", "6 months", "1 year"]
     })
     st.table(recommendations)
+
+    # Visualizations
+    st.subheader("Progress Towards Goals")
+    progress_data = pd.DataFrame({
+        "Category": ["Renewable Energy", "Waste Management", "Transportation Optimization"],
+        "Progress (%)": [60, 40, 50]
+    })
+    progress_chart = px.bar(
+        progress_data, x="Category", y="Progress (%)", title="Goal Progress",
+        labels={"Progress (%)": "Completion Percentage"},
+        color="Category", color_discrete_sequence=px.colors.sequential.Viridis
+    )
+    st.plotly_chart(progress_chart)
 
     # Gantt Chart for Task Tracking
     st.subheader("Dynamic Task Gantt Chart")
@@ -379,56 +345,22 @@ elif page == "Recommendations":
     # Convert tasks to a DataFrame
     task_df = pd.DataFrame(tasks)
 
-        try:
-    gantt_chart = create_gantt(
-        task_df,
-        index_col="Resource",
-        show_colorbar=True,
-        group_tasks=True,
-        title="Task Gantt Chart",
-        showgrid_x=True,
-        showgrid_y=True,
-    )
-    st.plotly_chart(gantt_chart, use_container_width=True)
-except Exception as e:
-    st.error(f"Failed to create Gantt chart: {e}")
-    
-    # Display Gantt chart in Streamlit
-    st.plotly_chart(gantt_chart, use_container_width=True)
+    # Display Gantt chart
+    try:
+        gantt_chart = create_gantt(
+            task_df,
+            index_col="Resource",
+            show_colorbar=True,
+            group_tasks=True,
+            title="Task Gantt Chart",
+            showgrid_x=True,
+            showgrid_y=True,
+        )
+        st.plotly_chart(gantt_chart, use_container_width=True)
+    except Exception as e:
+        st.error(f"Failed to create Gantt chart: {e}")
 
     # Display updated task list with Owner and Status
     st.write("### Detailed Task List")
     st.dataframe(task_df)
-
-    # Interactive Task Management
-    st.sidebar.title("Manage Tasks")
-
-    # Add new task
-    new_task_name = st.sidebar.text_input("Task Name", "")
-    start_date = st.sidebar.date_input("Start Date")
-    end_date = st.sidebar.date_input("End Date")
-    priority = st.sidebar.selectbox("Priority", ["High", "Medium", "Low"])
-    owner = st.sidebar.text_input("Owner", "")
-    status = st.sidebar.selectbox("Status", ["Not Started", "In Progress", "Completed"])
-
-    if st.sidebar.button("Add Task"):
-        if new_task_name and start_date and end_date and owner:
-            new_task = {
-                "Task": new_task_name,
-                "Start": str(start_date),
-                "Finish": str(end_date),
-                "Resource": priority,
-                "Completion": 0,  # New tasks start with 0% completion
-                "Owner": owner,
-                "Status": status,
-            }
-            task_df = task_df.append(new_task, ignore_index=True)
-            st.success(f"Task '{new_task_name}' added!")
-        else:
-            st.error("Please fill in all fields.")
-
-    # Display updated task list
-    st.write("### Updated Task List with Status and Owner")
-    st.dataframe(task_df)
-
 
