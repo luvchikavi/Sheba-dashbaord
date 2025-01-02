@@ -379,7 +379,7 @@ elif page == "Recommendations":
     # Convert tasks to a DataFrame
     task_df = pd.DataFrame(tasks)
 
-        # Create a Gantt chart
+        try:
     gantt_chart = create_gantt(
         task_df,
         index_col="Resource",
@@ -389,6 +389,9 @@ elif page == "Recommendations":
         showgrid_x=True,
         showgrid_y=True,
     )
+    st.plotly_chart(gantt_chart, use_container_width=True)
+except Exception as e:
+    st.error(f"Failed to create Gantt chart: {e}")
     
     # Display Gantt chart in Streamlit
     st.plotly_chart(gantt_chart, use_container_width=True)
