@@ -2,6 +2,9 @@ import os
 import pandas as pd
 import streamlit as st
 import plotly.express as px
+from plotly.figure_factory import create_gantt
+
+
 
 # Automatically change the working directory to the script's directory
 os.chdir(os.path.dirname(__file__))
@@ -47,11 +50,12 @@ if page == "Landing Page":
         of experience, he has guided organizations globally to achieve compliance and sustainability excellence. His expertise 
         in lifecycle analysis, regulatory strategy, and tool development ensures that organizations can seamlessly integrate 
         sustainability into their operations.
-
-        ---
-        @ All rights reserved by Oporto-Carbon and Dr. Avi Luvchik.
         """
     )
+
+    # Add the diagram image
+    st.subheader("Data Processing Flow Diagram")
+    st.image("data_processing_diagram1.svg", use_column_width=True)
 
     if st.button("Start Using Dashboard"):
         st.session_state.start = True
@@ -304,4 +308,124 @@ elif page == "Recommendations":
         color="Category", color_discrete_sequence=px.colors.sequential.Viridis
     )
     st.plotly_chart(progress_chart)
+    # Recommendations Tab
+elif page == "Recommendations":
+    st.image("sheba_logo.png", width=200)  # Sheba Logo on top of the page
+    st.title("General Overview and Recommendations")
+    st.markdown(
+        """
+        Based on the collected data and analyses, here are the top recommendations prioritized by importance and time sensitivity.
+        Additionally, set your internal goals and explore offset and inset processes to achieve net-zero emissions.
+        """
+    )
+
+    # Goal Setting
+    st.subheader("Set Internal Goals")
+    goals = pd.DataFrame({
+        "Goal": ["Net-zero emissions by 2030", "Offset 30% emissions by 2025", "Implement inset projects by 2026"],
+        "Status": ["In Progress", "Not Started", "In Progress"],
+        "Priority": ["High", "Medium", "High"]
+    })
+    st.table(goals)
+
+    # Recommendations
+    st.subheader("Top Recommendations")
+    recommendations = pd.DataFrame({
+        "Recommendation": [
+            "Increase renewable energy usage",
+            "Implement advanced waste management systems",
+            "Optimize transportation routes",
+            "Conduct staff training on sustainability"
+        ],
+        "Priority": ["High", "Medium", "High", "Low"],
+        "Timeframe": ["1 year", "2 years", "6 months", "1 year"]
+    })
+    st.table(recommendations)
+
+    # Gantt Chart for Task Tracking
+    st.subheader("Dynamic Task Gantt Chart")
+
+    # Sample task data with Owner and Status
+    tasks = [
+        {
+            "Task": "Develop compliance plan",
+            "Start": "2023-12-01",
+            "Finish": "2023-12-15",
+            "Resource": "High",
+            "Completion": 50,
+            "Owner": "Sustainability Officer",
+            "Status": "In Progress"
+        },
+        {
+            "Task": "Conduct audit",
+            "Start": "2023-12-16",
+            "Finish": "2023-12-31",
+            "Resource": "Medium",
+            "Completion": 30,
+            "Owner": "Environmental Manager",
+            "Status": "Pending"
+        },
+        {
+            "Task": "Submit documentation",
+            "Start": "2024-01-01",
+            "Finish": "2024-01-10",
+            "Resource": "Low",
+            "Completion": 10,
+            "Owner": "Compliance Team",
+            "Status": "Not Started"
+        },
+    ]
+
+    # Convert tasks to a DataFrame
+    task_df = pd.DataFrame(tasks)
+
+        # Create a Gantt chart
+    gantt_chart = create_gantt(
+        task_df,
+        index_col="Resource",
+        show_colorbar=True,
+        group_tasks=True,
+        title="Task Gantt Chart",
+        showgrid_x=True,
+        showgrid_y=True,
+    )
+    
+    # Display Gantt chart in Streamlit
+    st.plotly_chart(gantt_chart, use_container_width=True)
+
+    # Display updated task list with Owner and Status
+    st.write("### Detailed Task List")
+    st.dataframe(task_df)
+
+    # Interactive Task Management
+    st.sidebar.title("Manage Tasks")
+
+    # Add new task
+    new_task_name = st.sidebar.text_input("Task Name", "")
+    start_date = st.sidebar.date_input("Start Date")
+    end_date = st.sidebar.date_input("End Date")
+    priority = st.sidebar.selectbox("Priority", ["High", "Medium", "Low"])
+    owner = st.sidebar.text_input("Owner", "")
+    status = st.sidebar.selectbox("Status", ["Not Started", "In Progress", "Completed"])
+
+    if st.sidebar.button("Add Task"):
+        if new_task_name and start_date and end_date and owner:
+            new_task = {
+                "Task": new_task_name,
+                "Start": str(start_date),
+                "Finish": str(end_date),
+                "Resource": priority,
+                "Completion": 0,  # New tasks start with 0% completion
+                "Owner": owner,
+                "Status": status,
+            }
+            task_df = task_df.append(new_task, ignore_index=True)
+            st.success(f"Task '{new_task_name}' added!")
+        else:
+            st.error("Please fill in all fields.")
+
+    # Display updated task list
+    st.write("### Updated Task List with Status and Owner")
+    st.dataframe(task_df)
+
 
