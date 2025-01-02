@@ -47,6 +47,9 @@ if page == "Landing Page":
         of experience, he has guided organizations globally to achieve compliance and sustainability excellence. His expertise 
         in lifecycle analysis, regulatory strategy, and tool development ensures that organizations can seamlessly integrate 
         sustainability into their operations.
+
+        ---
+        @ All rights reserved by Oporto-Carbon and Dr. Avi Luvchik.
         """
     )
 
@@ -168,7 +171,7 @@ elif page == "Financial Models":
     st.subheader("Cost Analysis")
     renewable_cost = st.number_input("Cost of switching to renewables ($/MWh)", 50, 200, 100)
     waste_management_cost = st.number_input("Cost of waste reduction ($/ton)", 10, 100, 50)
-    transport_upgrade_cost = st.number_input("Cost of transport upgrades ($/vehicle)", 5000, 50000, 20000)
+    transport_upgrade_cost = st.number_input("Cost of transport upgrades ($/vehicle)", 500, 5000, 2000)
 
     total_cost = renewable_cost * 10 + waste_management_cost * 20 + transport_upgrade_cost * 5
     st.write(f"Total estimated cost: ${total_cost:,.2f}")
