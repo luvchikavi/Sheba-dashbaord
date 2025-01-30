@@ -5,7 +5,28 @@ import plotly.express as px
 from plotly.figure_factory import create_gantt
 
 
+def check_authentication():
+    """Restrict access to specific users."""
+    if "user_authenticated" not in st.session_state:
+        st.session_state["user_authenticated"] = False
 
+    # Get allowed users from secrets
+    allowed_users = st.secrets["auth"]["allowed_users"]
+
+    st.subheader("🔒 Secure Access Required")
+    email = st.text_input("Enter your email to access:")
+    if st.button("Login"):
+        if email in allowed_users:
+            st.session_state["user_authenticated"] = True
+            st.experimental_rerun()
+        else:
+            st.error("Access Denied: Unauthorized user.")
+    st.stop()
+
+def main():
+    check_authentication()  # Restrict access before loading app
+    st.title("Oporto-Carbon Gasification Feasibility Tool")
+    
 # Automatically change the working directory to the script's directory
 os.chdir(os.path.dirname(__file__))
 
