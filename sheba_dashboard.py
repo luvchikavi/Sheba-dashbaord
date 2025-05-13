@@ -28,7 +28,7 @@ def main():
     st.title("Oporto-Carbon Gasification Feasibility Tool")
     
 # Automatically change the working directory to the script's directory
-os.chdir(os.path.dirname(__file__))
+#os.chdir(os.path.dirname(__file__))
 
 # Set page configuration
 st.set_page_config(page_title="Sheba Hospital Sustainability Dashboard", layout="wide")
